@@ -30,7 +30,8 @@ func main() {
 	glfw.WindowHint(glfw.ContextVersionMajor, 4)
 	glfw.WindowHint(glfw.ContextVersionMinor, 1)
 
-	//Als nächstes muss das Profil gesetzt werden. Wie wird der auszuführende Code behandelt? Hauptprofil = No backwards compatability. Hier tritt ein Fehler auf bei der Findung von altem Code.
+	//Als nächstes muss das Profil gesetzt werden. Wie wird der auszuführende Code behandelt? Hauptprofil =
+	//No backwards compatability. Hier tritt ein Fehler auf bei der Findung von altem Code.
 	glfw.WindowHint(glfw.OpenGLProfile, glfw.OpenGLCoreProfile)
 
 	//Zulassen von neuen Versionen von OpenGL.
@@ -46,10 +47,12 @@ func main() {
 		panic("GLFW Fenster Aufbau fehlgeschlagen!")
 	}
 
-	//04.01, Tricky, Wir brauchen die Buffergrösse bzw. Informationen zur Buffergrösse. Die Dimensionen sind gesetzt, aber der symbolische Raum darin muss definiert sein.
+	//04.01, Tricky, Wir brauchen die Buffergrösse bzw. Informationen zur Buffergrösse.
+	//Die Dimensionen sind gesetzt, aber der symbolische Raum darin muss definiert sein.
 	bufferWidth, bufferHeight := window.GetFramebufferSize()
 
-	//04.02, Alles was geschrieben werden soll, muss in das zuvor angelegte Fenster. GLEW Bescheid geben, dass das Fenster mit dem OpenGL Kontext verknüpft ist. Können auch mehrere Fenster angelegt werden.
+	//04.02, Alles was geschrieben werden soll, muss in das zuvor angelegte Fenster. GLEW Bescheid geben,
+	//dass das Fenster mit dem OpenGL Kontext verknüpft ist. Können auch mehrere Fenster angelegt werden.
 	window.MakeContextCurrent()
 
 	//04.04, GL initialisieren. Initialisierung prüfen und bei Fehler das Fenster schließen, da es nun vorhanden ist.
