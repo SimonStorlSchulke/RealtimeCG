@@ -1,11 +1,62 @@
 package main
 
 import (
+	"fmt"
 	"runtime"
 
-	"github.com/go-gl/gl/v4.1-core/gl" // OR: github.com/go-gl/gl/v2.1/gl
+	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/glfw/v3.2/glfw"
 )
+
+const (
+	//Vertex Shader
+	myVShader = `
+		#version 330 layout (location=0) in vec3 pos 
+		void main(){
+			gl_Position = vec4(0.25*pos.x, 0.25*pos.y, pos.z, 1.0);
+		}
+	`
+
+	//Fragment Shader
+	myFShader = `
+		#version 330 out vec4 color
+		void main(){
+			color = vec4(1.0, 1.0, 0.0, 1.0);
+		}
+	`
+)
+
+var (
+	triVAO    uint32
+	triVBO    uint32
+	triShader uint32
+)
+
+//Create VAO
+func drawTriangle() {
+	//Verts Position bestimmen
+	vertices := []float32{
+		-1, -1, 0,
+		1, -1, 0,
+		0, 1, 0,
+	}
+	fmt.Println(vertices) //temp
+	gl.GenVertexArrays(1, &triVAO)
+	gl.BindVertexArray(triVAO)
+
+	gl.GenBuffers(1, &triVBO)
+	gl.BindBuffer(gl.ARRAY_BUFFER, triVBO)
+
+	gl.BufferData(gl.ARRAY_BUFFER, len(vertices), gl.Ptr(vertices), gl.STATIC_DRAW) //Für unsafe *Ptr - gl.Ptr verwenden
+
+	//Wirklich GL_Float?
+	gl.VertexAttribPointer(0, 3, gl.FLOAT, false, 0, gl.Ptr(0))
+
+	gl.EnableVertexAttribArray(0)
+	gl.BindBuffer(gl.ARRAY_BUFFER, 0)
+
+	gl.BindVertexArray(0)
+}
 
 func main() {
 
@@ -64,10 +115,8 @@ func main() {
 
 	//05 Einstellen der GL Viewport Größe. Quasi die Größe eines Bereichs im Fenster in den wir schreiben. Nullpunkt und die Dimensionen.
 	gl.Viewport(0, 0, int32(bufferWidth), int32(bufferHeight)) //nomal gucken
-
 	//06 Ticking/Loop bis das Fenster geschlossen wird. Stop Loop, Programm geschlossen.
 	for !window.ShouldClose() {
-
 		// Get + Handle User Input Events. Z.B. um das Fenster zu schließen oder andere Events zu starten.
 		glfw.PollEvents()
 
