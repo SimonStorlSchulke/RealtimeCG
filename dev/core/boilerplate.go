@@ -54,3 +54,27 @@ func CompileShader(source string, shaderType uint32) (uint32, error) {
 
 	return shader, nil
 }
+
+//Returns gl Program by given vertex- and fragmentshader
+func NewProgram(vShaderSource, fShaderSource string) (uint32, error) {
+	vShader, err := CompileShader(vShaderSource, gl.VERTEX_SHADER)
+	if err != nil {
+		return 0, err
+	}
+	fShader, err := CompileShader(fShaderSource, gl.FRAGMENT_SHADER)
+	if err != nil {
+		return 0, err
+	}
+	prog := gl.CreateProgram()
+	gl.AttachShader(prog, vShader)
+	gl.AttachShader(prog, fShader)
+	gl.LinkProgram(prog)
+
+	var status int32
+	gl.GetProgramiv(prog, gl.LINK_STATUS, &status)
+	if status == gl.FALSE {
+		return 0, err
+	}
+
+	return prog, nil
+}

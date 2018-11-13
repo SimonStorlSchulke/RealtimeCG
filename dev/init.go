@@ -29,19 +29,9 @@ func initOpenGL() uint32 {
 	}
 	version := gl.GoStr(gl.GetString(gl.VERSION))
 	log.Println("OpenGL version", version)
-	vertexShader, err := core.CompileShader(vertexShaderSource, gl.VERTEX_SHADER)
+	prog, err := core.NewProgram(vertexShaderSource, fragmentShaderSource)
 	if err != nil {
 		panic(err)
 	}
-
-	fragmentShader, err := core.CompileShader(fragmentShaderSource, gl.FRAGMENT_SHADER)
-	if err != nil {
-		panic(err)
-	}
-
-	prog := gl.CreateProgram()
-	gl.AttachShader(prog, vertexShader)
-	gl.AttachShader(prog, fragmentShader)
-	gl.LinkProgram(prog)
 	return prog
 }

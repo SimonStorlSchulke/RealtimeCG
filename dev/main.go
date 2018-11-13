@@ -20,28 +20,35 @@ var (
 		-0.5, -0.5, 0,
 		0.5, -0.5, 0,
 	}
+	triangle2 = []float32{
+		0.2, -0.2, 0,
+		0.2, -0.2, 0,
+		-0.2, -0.2, 0,
+	}
 	time float32
 )
 
 func main() {
+	//triangle, _ = obj.ShittyObjReader("cube.obj")
 
 	window := core.InitGlfw(width, height, false, "Testwindow")
 	defer glfw.Terminate()
-	program := initOpenGL()
+	prog := initOpenGL()
 
 	vao := core.MakeVao(triangle)
 	for !window.ShouldClose() {
-		draw(vao, window, program)
+		draw(vao, window, prog)
 	}
 }
 
-func draw(vao uint32, window *glfw.Window, program uint32) {
+//called every frame
+func draw(vao uint32, window *glfw.Window, prog uint32) {
 
-	time += 0.1
-	core.SetSingleUniformFloat(program, "time", time)
+	time += 0.03
+	core.SetSingleUniformFloat(prog, "time", time)
 
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
-	gl.UseProgram(program)
+	gl.UseProgram(prog)
 
 	gl.BindVertexArray(vao)
 	gl.DrawArrays(gl.TRIANGLES, 0, int32(len(triangle)/3))
