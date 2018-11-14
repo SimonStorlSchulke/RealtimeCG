@@ -19,4 +19,11 @@ func SetUniformMat4(prog uint32, name string, mat mgl32.Mat4) {
 //Set uniform of any type
 func SetUniform(prog uint32, name string, value interface{}) {
 	//Todo
+	/*
+		switch v := value.(type) {
+		case int:
+		case float32:
+		case mgl32.Mat4:
+		}
+	*/
 }
