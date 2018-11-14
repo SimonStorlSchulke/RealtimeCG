@@ -55,7 +55,7 @@ func CompileShader(source string, shaderType uint32) (uint32, error) {
 	return shader, nil
 }
 
-//Returns gl Program by given vertex- and fragmentshader
+//Returns gl program by given vertex- and fragmentshader
 func NewProgram(vShaderSource, fShaderSource string) (uint32, error) {
 	vShader, err := CompileShader(vShaderSource, gl.VERTEX_SHADER)
 	if err != nil {
