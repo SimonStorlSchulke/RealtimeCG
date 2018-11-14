@@ -52,7 +52,7 @@ func main() {
 
 	//unused - Projection Stuff
 	projection := mgl32.Perspective(mgl32.DegToRad(45.0), float32(width)/height, 0.1, 10.0)
-	core.SetUniformMat4(prog, "projection", projection)
+	core.SetUniform(prog, "projection", projection)
 
 	camera := mgl32.LookAtV(mgl32.Vec3{3, 3, 3}, mgl32.Vec3{0, 0, 0}, mgl32.Vec3{0, 1, 0})
 	fmt.Println(camera)
@@ -77,12 +77,12 @@ func draw(vao uint32, window *glfw.Window, prog uint32) {
 
 	//Todo: Combine Model + ModelR
 
-	core.SetUniformFloat(prog, "tri_Offset", float32(triOffset))
-	core.SetUniformMat4(prog, "model", model)   //replace with &model later
-	core.SetUniformMat4(prog, "modelR", modelR) //replace with &model later
+	core.SetUniform(prog, "tri_Offset", float32(triOffset))
+	core.SetUniform(prog, "model", model)   //replace with &model later
+	core.SetUniform(prog, "modelR", modelR) //replace with &model later
 
 	time += 0.01
-	core.SetUniformFloat(prog, "time", time)
+	core.SetUniform(prog, "time", time)
 
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 	gl.UseProgram(prog)
