@@ -7,7 +7,7 @@ import (
 )
 
 // makeVao initializes and returns a vertex array from the points provided.
-func MakeVao(points []float32) uint32 {
+func MakeVao(points []float32, indices []uint32) (uint32, uint32) {
 	var vbo uint32
 	gl.GenBuffers(1, &vbo)
 	gl.BindBuffer(gl.ARRAY_BUFFER, vbo)
@@ -22,7 +22,12 @@ func MakeVao(points []float32) uint32 {
 	gl.BindBuffer(gl.ARRAY_BUFFER, vbo)
 	gl.VertexAttribPointer(0, 3, gl.FLOAT, false, 0, nil)
 
-	return vao
+	var elementbuffer uint32
+	gl.GenBuffers(1, &elementbuffer)
+	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, elementbuffer)
+	gl.BufferData(gl.ELEMENT_ARRAY_BUFFER, len(indices)*4, gl.Ptr(&indices[0]), gl.STATIC_DRAW)
+
+	return vao, elementbuffer
 }
 
 //Reads a file and returns as string, usable as shader
