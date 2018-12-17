@@ -2,6 +2,8 @@ package main
 
 import (
 	"RealtimeCG/dev/core"
+	"RealtimeCG/dev/engine"
+	"fmt"
 
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/glfw/v3.2/glfw"
@@ -18,16 +20,7 @@ const (
 var (
 	vertexShaderSource   string
 	fragmentShaderSource string
-	verts                = []float32{
-		-1.0, -1.0, 0.0,
-		0.0, -1.0, 1.0,
-		1.0, -1.0, 0.0,
-		0.0, 1.0, 0.0,
-		-1.0, -1.0, 0.0,
-		0.0, -1.0, 1.0,
-		1.0, -1.0, 0.0,
-		0.0, 1.0, 0.0,
-	}
+
 	indices = []uint32{
 		0, 3, 1,
 		1, 3, 2,
@@ -57,16 +50,15 @@ func main() {
 	projection = mgl32.Perspective(mgl32.DegToRad(45.0), float32(width)/height, 0.1, 10.0)
 	core.SetUniform(prog, "projection", projection)
 
-	camera := mgl32.LookAtV(mgl32.Vec3{-3, -3, -3}, mgl32.Vec3{0, 0, 0}, mgl32.Vec3{0, 1, 0})
-	core.SetUniform(prog, "camera", camera)
+	camera := engine.Cam(-3, -3, -3, 0, 0, 0)
+	core.SetUniform(prog, "camera", camera.Mat())
 
-	vao, elementBuffer := core.MakeVao(verts, indices)
+	fmt.Println(camera.Info())
+
+	vao, elementBuffer := core.MakeVao(engine.ExampleCubeVerts, indices)
 	for !window.ShouldClose() {
 		draw(vao, elementBuffer, window, prog)
 	}
-
-	//unused - Projection Stuff
-
 }
 
 //called every frame
@@ -78,6 +70,10 @@ func draw(vao, elementBuffer uint32, window *glfw.Window, prog uint32) {
 	core.SetUniform(prog, "model", model) //replace with &model later
 
 	time += 0.01
+
+	camera := engine.Cam(-3, -3, -3+time, 0, 0, 0)
+	core.SetUniform(prog, "camera", camera.Mat())
+
 	core.SetUniform(prog, "time", time)
 
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
@@ -86,7 +82,7 @@ func draw(vao, elementBuffer uint32, window *glfw.Window, prog uint32) {
 
 	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, elementBuffer)
 
-	gl.DrawArrays(gl.TRIANGLES, 0, int32(len(verts)/3))
+	gl.DrawArrays(gl.TRIANGLES, 0, int32(len(engine.ExampleCubeVerts)/3))
 
 	gl.DrawElements(
 		gl.TRIANGLES,        // mode
