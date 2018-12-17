@@ -52,8 +52,10 @@ func main() {
 	window := core.InitGlfw(width, height, false, "Testwindow")
 	defer glfw.Terminate()
 	prog := initOpenGL()
+	gl.UseProgram(prog)
 
-	projection = mgl32.Perspective(mgl32.DegToRad(0.0), float32(width)/height, 0.1, 10.0)
+	projection = mgl32.Perspective(mgl32.DegToRad(45.0), float32(width)/height, 0.1, 10.0)
+	core.SetUniform(prog, "projection", projection)
 
 	camera := mgl32.LookAtV(mgl32.Vec3{-3, -3, -3}, mgl32.Vec3{0, 0, 0}, mgl32.Vec3{0, 1, 0})
 	core.SetUniform(prog, "camera", camera)
@@ -70,31 +72,15 @@ func main() {
 //called every frame
 func draw(vao, elementBuffer uint32, window *glfw.Window, prog uint32) {
 
-	//BOUNCE!
-	if direction {
-		triOffset += triIncrement
-	} else {
-		triOffset -= triIncrement
-	}
-	if math32.Abs(triOffset) >= triMaxOffset {
-		direction = !direction
-	}
-	model = mgl32.Translate3D(triOffset, 0, 0)
 	model = mgl32.Ident4()
-	angle += rotSpeed
-	modelR := mgl32.HomogRotate3D(float32(angle), mgl32.Vec3{0.4, 1, 0.2})
 
 	//Todo: Combine Model + ModelR
-	core.SetUniform(prog, "projection", projection)
-	core.SetUniform(prog, "tri_Offset", float32(triOffset))
-	core.SetUniform(prog, "model", model)   //replace with &model later
-	core.SetUniform(prog, "modelR", modelR) //replace with &model later
+	core.SetUniform(prog, "model", model) //replace with &model later
 
 	time += 0.01
 	core.SetUniform(prog, "time", time)
 
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
-	gl.UseProgram(prog)
 
 	gl.BindVertexArray(vao)
 
