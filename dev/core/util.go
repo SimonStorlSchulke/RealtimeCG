@@ -14,8 +14,8 @@ func MakeVao(points []float32, indices []uint32) (uint32, uint32) {
 	gl.BufferData(gl.ARRAY_BUFFER, 4*len(points), gl.Ptr(points), gl.STATIC_DRAW)
 
 	//Todo add multiple vao to an vbo
-
 	var vao uint32
+
 	gl.GenVertexArrays(1, &vao)
 	gl.BindVertexArray(vao)
 	gl.EnableVertexAttribArray(0)

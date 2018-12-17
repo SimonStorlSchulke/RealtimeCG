@@ -8,36 +8,20 @@ import (
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/glfw/v3.2/glfw"
 	"github.com/go-gl/mathgl/mgl32"
-	"github.com/rkusa/gm/math32"
 )
 
 const (
-	width     = 600
-	height    = 600
-	toRadians = math32.Pi / 180
+	width  = 800
+	height = 600
 )
 
 var (
 	vertexShaderSource   string
 	fragmentShaderSource string
+	time                 float32
 
-	indices = []uint32{
-		0, 3, 1,
-		1, 3, 2,
-		2, 3, 0,
-		0, 1, 2,
-	}
-	time float32
-
-	//win95 screensaver values:
-	direction            = true
-	triOffset    float32 = 0
-	triMaxOffset float32 = 1.0
-	triIncrement float32 = 0.01
-	model        mgl32.Mat4
-	projection   mgl32.Mat4
-	rotSpeed     = 0.01
-	angle        = 0.0
+	model      mgl32.Mat4
+	projection mgl32.Mat4
 )
 
 func main() {
@@ -55,7 +39,7 @@ func main() {
 
 	fmt.Println(camera.Info())
 
-	vao, elementBuffer := core.MakeVao(engine.ExampleCubeVerts, indices)
+	vao, elementBuffer := core.MakeVao(engine.CubeVerts, engine.CubeIndices)
 	for !window.ShouldClose() {
 		draw(vao, elementBuffer, window, prog)
 	}
@@ -71,7 +55,7 @@ func draw(vao, elementBuffer uint32, window *glfw.Window, prog uint32) {
 
 	time += 0.01
 
-	camera := engine.Cam(-3, -3, -3+time, 0, 0, 0)
+	camera := engine.Cam(-3, -3+time, -3, 0, 0, 0)
 	core.SetUniform(prog, "camera", camera.Mat())
 
 	core.SetUniform(prog, "time", time)
@@ -82,13 +66,11 @@ func draw(vao, elementBuffer uint32, window *glfw.Window, prog uint32) {
 
 	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, elementBuffer)
 
-	gl.DrawArrays(gl.TRIANGLES, 0, int32(len(engine.ExampleCubeVerts)/3))
-
 	gl.DrawElements(
-		gl.TRIANGLES,        // mode
-		int32(len(indices)), // count
-		gl.UNSIGNED_SHORT,   // type
-		gl.Ptr(indices),     // element array buffer offset
+		gl.TRIANGLES,                     // mode
+		int32(len(engine.CubeIndices)*4), // count
+		gl.UNSIGNED_SHORT,                // type
+		gl.PtrOffset(0),                  // element array buffer offset
 	)
 
 	glfw.PollEvents()

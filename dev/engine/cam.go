@@ -20,7 +20,7 @@ func Cam(originX, originY, originZ, targetX, targetY, targetZ float32) cam {
 }
 
 func (c *cam) Mat() mgl32.Mat4 {
-	return mgl32.LookAtV(c.origin, c.target, mgl32.Vec3{0, 0, 1})
+	return mgl32.LookAtV(c.origin, c.target, mgl32.Vec3{0, 1, 0})
 }
 
 func (c cam) Info() string {
