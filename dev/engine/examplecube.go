@@ -40,9 +40,6 @@ func init() {
 		// bottom
 		1, 5, 4,
 		1, 0, 4,
-		// top
-		3, 2, 6,
-		3, 7, 6,
 	}
 
 	CubeColors = []float32{

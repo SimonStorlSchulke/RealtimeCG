@@ -1,13 +1,11 @@
 package core
 
 import (
-	"io/ioutil"
-
 	"github.com/go-gl/gl/v4.1-core/gl"
 )
 
 // makeVao initializes and returns a vertex array from the points provided.
-func MakeVao(points []float32, indices []uint32) (uint32, uint32) {
+func ElementBuffer(points []float32, indices []uint32) uint32 {
 	var vbo uint32
 	gl.GenBuffers(1, &vbo)
 	gl.BindBuffer(gl.ARRAY_BUFFER, vbo)
@@ -27,12 +25,5 @@ func MakeVao(points []float32, indices []uint32) (uint32, uint32) {
 	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, elementbuffer)
 	gl.BufferData(gl.ELEMENT_ARRAY_BUFFER, len(indices)*4, gl.Ptr(&indices[0]), gl.STATIC_DRAW)
 
-	return vao, elementbuffer
-}
-
-//Reads a file and returns as string, usable as shader
-func ReadShader(path string) (string, error) {
-	byteArr, err := ioutil.ReadFile(path)
-	str := string(byteArr[:])
-	return str + "\x00", err
+	return elementbuffer
 }

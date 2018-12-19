@@ -33,5 +33,7 @@ func initOpenGL() uint32 {
 	if err != nil {
 		panic(err)
 	}
+	gl.Enable(gl.DEPTH_TEST)
+
 	return prog
 }
