@@ -1,8 +1,8 @@
 package engine
 
-var CubeColors []float32
 var CubeVerts []float32
 var CubeIndices []uint32
+var CubeColors []float32
 
 type Mesh struct {
 	Verts   []float32
