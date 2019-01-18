@@ -35,6 +35,7 @@ func main() {
 	camera := engine.Cam(-3, -3, -3, 0, 0, 0)
 	core.SetUniform(prog, "camera", camera.Mat())
 
+	//Elementbuffer value currently unused -> what is it used for?
 	elementBuffer := core.ElementBuffer(engine.CubeVerts, engine.CubeIndices)
 	for !window.ShouldClose() {
 		update(elementBuffer, window, prog)

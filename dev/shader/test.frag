@@ -1,9 +1,12 @@
 #version 410
 
-out vec4 frag_colour;
 uniform float time;
 float near = 0.1; 
-float far  = 100.0; 
+float far  = 100.0;
+
+out vec4 frag_colour;
+in vec3 vertCol;
+in vec2 TexCoord;
 
 float LinearizeDepth(float depth) 
 {
@@ -14,5 +17,8 @@ float LinearizeDepth(float depth)
 void main() {
     float v = abs(sin(time));
     float depth = LinearizeDepth(gl_FragCoord.z) / far * 2;
-    frag_colour = vec4(vec3(depth), 1.0);
+
+    //Vertex Color
+    //frag_colour = vec4(vertCol, 1.0);
+    frag_colour = vec4(TexCoord, v, 1.0);
 }
