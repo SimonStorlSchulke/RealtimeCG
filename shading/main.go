@@ -1,9 +1,8 @@
 package main
 
 import (
-	"RealtimeCG/dev/core"
-	"RealtimeCG/dev/engine"
-	"RealtimeCG/dev/obj"
+	"RealtimeCG/shading/core"
+	"RealtimeCG/shading/engine"
 
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/glfw/v3.2/glfw"
@@ -22,6 +21,7 @@ var (
 
 	model      mgl32.Mat4
 	projection mgl32.Mat4
+	camera     engine.Cam
 )
 
 func main() {
@@ -30,16 +30,16 @@ func main() {
 	defer glfw.Terminate()
 	prog := initOpenGL()
 	gl.UseProgram(prog)
+
 	projection = mgl32.Perspective(mgl32.DegToRad(45.0), float32(width)/height, 0.1, 10.0)
 	core.SetUniform(prog, "projection", projection)
 
-	camera := engine.Cam(-3, -3, -3, 0, 0, 0)
+	camera = engine.NewCam(-3, -3, -3, 0, 0, 0)
 	core.SetUniform(prog, "camera", camera.Mat())
 
 	//Elementbuffer value currently unused -> what is it used for?
-	obj := obj.ReadModel("./cube.obj")
 
-	elementBuffer := core.ElementBuffer(obj)
+	elementBuffer := core.ElementBuffer(engine.CubeVerts, engine.CubeIndices)
 	for !window.ShouldClose() {
 		update(elementBuffer, window, prog)
 	}
@@ -47,14 +47,14 @@ func main() {
 
 //called every frame
 func update(elementBuffer uint32, window *glfw.Window, prog uint32) {
-
 	model = mgl32.Ident4()
 	core.SetUniform(prog, "model", model) //replace with &model later
 
 	time += 0.01
 	core.SetUniform(prog, "time", time)
 
-	camera := engine.Cam(-engine.MouseX*4, -engine.MouseY*4, -3, 0, 0, 0)
+	core.SetUniform(prog, "layer", engine.NumKey) //layer
+
 	core.SetUniform(prog, "camera", camera.Mat())
 
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
@@ -67,6 +67,27 @@ func update(elementBuffer uint32, window *glfw.Window, prog uint32) {
 	)
 
 	engine.CalcMousePos(window)
+	engine.ReadKeys(window)
+
+	//ugly code! recompile shaders
+	if engine.Pressed {
+		time = 0
+		core.UpdateShaders(prog)
+		core.SetUniform(prog, "projection", projection)
+		core.SetUniform(prog, "camera", camera.Mat())
+	}
+	engine.Pressed = false
+
+	//pan camera with RMB
+	if engine.Rmb {
+		camera = engine.NewCam(-engine.MouseX*4+1, -engine.MouseY*4+2, -3, 0, 0, 0)
+	}
+
+	//reset time when switching layers
+	if engine.TimeR {
+		engine.TimeR = false
+		time = 0
+	}
 
 	glfw.PollEvents()
 	window.SwapBuffers()

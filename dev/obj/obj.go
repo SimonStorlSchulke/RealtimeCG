@@ -19,7 +19,7 @@ type Model struct {
 }
 
 // NewModel will read an OBJ model file and create a Model from its contents
-func NewModel(file string) Model {
+func ReadModel(file string) Model {
 	// Open the file for reading and check for errors.
 	objFile, err := os.Open(file)
 	if err != nil {
@@ -101,9 +101,9 @@ func NewModel(file string) Model {
 			model.NormalIndices = append(model.NormalIndices, norm[1])
 			model.NormalIndices = append(model.NormalIndices, norm[2])
 
-			model.VecIndices = append(model.VecIndices, vec[0])
-			model.VecIndices = append(model.VecIndices, vec[1])
-			model.VecIndices = append(model.VecIndices, vec[2])
+			model.VecIndices = append(model.VecIndices, vec[0]-1)
+			model.VecIndices = append(model.VecIndices, vec[1]-1)
+			model.VecIndices = append(model.VecIndices, vec[2]-1)
 
 			model.UvIndices = append(model.UvIndices, uv[0])
 			model.UvIndices = append(model.UvIndices, uv[1])

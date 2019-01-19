@@ -20,5 +20,5 @@ void main() {
 
     //Vertex Color
     //frag_colour = vec4(vertCol, 1.0);
-    frag_colour = vec4(TexCoord, v, 1.0);
+    frag_colour = vec4(TexCoord, 0, 1);
 }

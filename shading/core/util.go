@@ -1,29 +1,10 @@
 package core
 
 import (
-	"RealtimeCG/dev/obj"
-	"fmt"
-
 	"github.com/go-gl/gl/v4.1-core/gl"
 )
 
-// makeVao initializes and returns a vertex array from the points provided.
-func ElementBuffer(model obj.Model) uint32 {
-
-	var points []float32
-	var indices []uint32
-
-	//ugly
-	for i, _ := range model.VecIndices {
-		indices = append(indices, uint32(model.VecIndices[i]))
-	}
-
-	for i, v := range model.Vecs {
-		points = append(points, v.X(), v.Y(), v.Z(), 1, 0, 0, model.Uvs[i][0], model.Uvs[i+1][1]) //todo color & uv from model
-	}
-
-	fmt.Println(indices)
-
+func ElementBuffer(points []float32, indices []uint32) uint32 {
 	var vbo uint32
 	gl.GenBuffers(1, &vbo)
 	gl.BindBuffer(gl.ARRAY_BUFFER, vbo)
