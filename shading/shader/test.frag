@@ -39,20 +39,20 @@ float LinearizeDepth(float depth) {
     return (2.0 * near * far) / (far + near - z * (far - near));	
 }
 
-float HardGradients(float input, float num) {
-    return num * mod(input, 1/num);
+float HardGradients(float val, float num) {
+    return num * mod(val, 1/num);
 }
 
-float LinearGradients(float input, float num) {
-    float f = num * mod(input, 1/num);
+float LinearGradients(float val, float num) {
+    float f = num * mod(val, 1/num);
     if (f > 0.5) {
         f = 1-f;
     }
     return f;
 }
 
-float SinGradients(float input, float num) {
-    return (sin(input * num * 2 * PI) + 1) / 2;
+float SinGradients(float val, float num) {
+    return (sin(val * num * 2 * PI) + 1) / 2;
 }
 
 float depth() {
@@ -80,6 +80,7 @@ vec3 scales() {
     return c;
 }
 
+// aus book of shaders -
 // 2D Noise based on Morgan McGuire @morgan3d
 // https://www.shadertoy.com/view/4dS3Wd
 float noise(in vec2 st) {
@@ -102,23 +103,24 @@ float noise(in vec2 st) {
             (d - b) * u.x * u.y;
 }
 
-float fbm(in vec2 st, int OCTAVES) {
+float fbm(in vec2 st, int OCTAVES, vec2 offset) {
     // Initial values
+    int maxOctaves = 16;
+    OCTAVES = clamp(OCTAVES, 1, maxOctaves);
     float value = 0.0;
     float amplitude = .5;
     //
     // Loop of octaves
     for (int i = 0; i < OCTAVES; i++) {
-        value += amplitude * noise(st);
+        value += amplitude * noise(st+offset*i);
         st *= 2.;
         amplitude *= .5;
     }
     return value;
 }
 
-
 float waves(float scale, float distortion, int octaves, int banding) {
-    float noise = fbm(TexCoord*scale, octaves);
+    float noise = fbm(TexCoord*scale, octaves, vec2(0));
     float grad = SinGradients(mix(x, noise, distortion), banding);
     return grad;
 }
@@ -140,17 +142,17 @@ float fire() {
     vec2 cTransp = transformCoords(TexCoord, 0, -time);
     
     //distort coords
-    float distNoise = fbm(TexCoord*12, 5);
+    float distNoise = fbm(TexCoord*12, 5, vec2(0));
     cTransp = distortCoords(cTransp, .1, distNoise);
 
     //generate noise
-    float noise = fbm(cTransp*4, 5);
+    float noise = fbm(cTransp*4, 5, vec2(0));
     noise = 1.3*pow(noise, y*6);
     return noise;
 }
 
 vec3 cartoonFire() {
-    float noise = fire();
+    float noise = pow(fire(), clamp(7-time*3, 0.8, 10));
 
     //gradient
     if(noise > 1) {
@@ -165,11 +167,24 @@ vec3 cartoonFire() {
         return vec3(.800000, 0.146404, 0.014866);
     } else if(noise > 0.14) {
         return vec3(0.216065, 0.030013, 0.007945);
-    } else if(noise > 0.06) {
+    } else if(noise > 0.05) {
         return vec3(0.05);
     }
     return vec3(0);
 }
+
+
+vec3 sci() {
+    float n0 = pow(fbm(TexCoord*50+ 10 - vec2(time*0.3, 0), 3, vec2(0)), 2);
+    float n1 = pow(fbm(TexCoord+camera[0].y*5 + time*0.1, 3, vec2(0)), 3);
+    
+    float res = (n0 + n1);
+    if(res > 0.65) {
+        return vec3(res) * vec3(0,1.5,.4);
+    }
+    return vec3(.06,n1*.3 + .1, n0*.3 + .13);
+}
+
 
 void main() {
     switch(layer) {
@@ -183,38 +198,43 @@ void main() {
             c = vec3(HardGradients(y, 4));            
             break;
         case 4: //Sin Gradients
-            c = vec3(SinGradients(x, 5));            
+            c = vec3(SinGradients(x, 5));
             break;
         case 5: //scales
-            c = scales();                 
+            c = scales();
             break;
         case 6: //Animation
             c = vec3(SinGradients(x + time, 5) * SinGradients(y + time, 5));            
             break;
         case 7: //fract
-            c = vec3(fract(TexCoord*2), 0);            
+            c = vec3(fract(TexCoord*2), 0);
             break;
         case 8: //noise
-            c = vec3(noise(TexCoord*20));           
+            c = vec3(noise(TexCoord*20));
             break;
         case 9: //fbm
-            c = vec3(fbm(TexCoord*12, 5));            
+            c = vec3(fbm(TexCoord*12, int(time)+1, vec2(0)));
             break;
         case 0: // distortion
-            c = vec3(fbm(distortCoords(TexCoord*10, .7, time*fbm(TexCoord*12, 5)), 5));            
+            c = vec3(fbm(distortCoords(TexCoord*10, .7, time*fbm(TexCoord*12, 5, vec2(0))), 5, vec2(0)));            
             break;
         case 11: //waves, camera
-            c = vec3(waves(5, camera[0].y * 2, 5, 5));            
+            c = vec3(waves(5, camera[0].y * 2, 5, 5));
             break;
         case 12: //fire
-            c = vec3(fire());            
+            c = vec3(fire());
             break;
         case 13: //cartoon fire
             c = cartoonFire();            
             break;
         case 14: //depth
-            c = vec3(depth());            
+            c = vec3(depth());
             break;
+        case 15: //depth
+            c = sci();
+            break;
+        default:
+            c = vec3(1,0,0);
     }
     frag_colour = vec4(c,1);
 }

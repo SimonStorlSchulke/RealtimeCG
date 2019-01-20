@@ -26,7 +26,7 @@ var (
 
 func main() {
 
-	window := core.InitGlfw(width, height, false, "Testwindow")
+	window := core.InitGlfw(width, height, false, "Shading")
 	defer glfw.Terminate()
 	prog := initOpenGL()
 	gl.UseProgram(prog)
@@ -38,7 +38,6 @@ func main() {
 	core.SetUniform(prog, "camera", camera.Mat())
 
 	//Elementbuffer value currently unused -> what is it used for?
-
 	elementBuffer := core.ElementBuffer(engine.CubeVerts, engine.CubeIndices)
 	for !window.ShouldClose() {
 		update(elementBuffer, window, prog)
@@ -80,7 +79,7 @@ func update(elementBuffer uint32, window *glfw.Window, prog uint32) {
 
 	//pan camera with RMB
 	if engine.Rmb {
-		camera = engine.NewCam(-engine.MouseX*4+1, -engine.MouseY*4+2, -3, 0, 0, 0)
+		camera = engine.NewCam(-engine.MouseX*4+1, -engine.MouseY*4+2, -3, 0, -0.1, 0)
 	}
 
 	//reset time when switching layers

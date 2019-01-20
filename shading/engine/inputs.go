@@ -63,6 +63,6 @@ func charCB(w *glfw.Window, char rune, mods glfw.ModifierKey) {
 		num += 10
 	}
 	NumKey = num
-	fmt.Println("c", NumKey)
+	fmt.Println("layer", NumKey)
 	TimeR = true
 }

@@ -5,7 +5,7 @@ import (
 	"github.com/go-gl/glfw/v3.2/glfw"
 )
 
-// initGlfw initializes glfw and returns a Window to use.
+//InitGlfw initializes glfw and returns a Window to use.
 func InitGlfw(width, height int, resizable bool, title string) *glfw.Window {
 	if err := glfw.Init(); err != nil {
 		panic(err)
