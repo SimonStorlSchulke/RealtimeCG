@@ -16,6 +16,7 @@ var NumKey = 1
 var Pressed bool
 var TimeR bool
 var Rmb bool
+var Orth bool = true
 
 //CalcMousePos Returns the Mouse Position on the window on a scale of
 //0 (top left) to 1 (bottom right)
@@ -53,6 +54,10 @@ func lmbCb(w *glfw.Window, button glfw.MouseButton, action glfw.Action, mods glf
 func charCB(w *glfw.Window, char rune, mods glfw.ModifierKey) {
 	s, err := strconv.Unquote(strconv.QuoteRune(char))
 	if err != nil {
+		return
+	}
+	if s == "d" {
+		Orth = !Orth
 		return
 	}
 	num, err := strconv.Atoi(s)

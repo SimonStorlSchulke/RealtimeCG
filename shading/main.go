@@ -10,8 +10,8 @@ import (
 )
 
 const (
-	width  = 1000
-	height = 750
+	width  = 900
+	height = 900
 )
 
 var (
@@ -34,7 +34,7 @@ func main() {
 	projection = mgl32.Perspective(mgl32.DegToRad(45.0), float32(width)/height, 0.1, 10.0)
 	core.SetUniform(prog, "projection", projection)
 
-	camera = engine.NewCam(-3, -3, -3, 0, 0, 0)
+	camera = engine.NewCam(0, 0, -3.41, 0, 0, 0)
 	core.SetUniform(prog, "camera", camera.Mat())
 
 	//Elementbuffer value currently unused -> what is it used for?
@@ -51,9 +51,8 @@ func update(elementBuffer uint32, window *glfw.Window, prog uint32) {
 
 	time += 0.01
 	core.SetUniform(prog, "time", time)
-
+	core.SetUniform(prog, "mouse", mgl32.Vec2{engine.MouseX, engine.MouseY})
 	core.SetUniform(prog, "layer", engine.NumKey) //layer
-
 	core.SetUniform(prog, "camera", camera.Mat())
 
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
@@ -73,13 +72,16 @@ func update(elementBuffer uint32, window *glfw.Window, prog uint32) {
 		time = 0
 		core.UpdateShaders(prog)
 		core.SetUniform(prog, "projection", projection)
-		core.SetUniform(prog, "camera", camera.Mat())
 	}
 	engine.Pressed = false
 
-	//pan camera with RMB
-	if engine.Rmb {
+	//pan camera with RMB, perspective/ortho with D key
+	if engine.Rmb && !engine.Orth {
 		camera = engine.NewCam(-engine.MouseX*4+1, -engine.MouseY*4+2, -3, 0, -0.1, 0)
+	}
+	if engine.Orth {
+		camera = engine.NewCam(0, 0, -3.41, 0, 0, 0)
+		engine.Orth = false
 	}
 
 	//reset time when switching layers

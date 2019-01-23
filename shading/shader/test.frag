@@ -1,10 +1,14 @@
 #version 410
 
+//uniforms
 uniform float time;
 uniform int layer;
+uniform vec2 mouse;
+uniform mat4 camera;
+
+//depth vars
 float near = 0.1; 
 float far  = 100.0;
-uniform mat4 camera;
 
 out vec4 frag_colour;
 in vec3 vertCol;
@@ -80,7 +84,7 @@ vec3 scales() {
     return c;
 }
 
-// aus book of shaders -
+// Aus Book Of Shaders -
 // 2D Noise based on Morgan McGuire @morgan3d
 // https://www.shadertoy.com/view/4dS3Wd
 float noise(in vec2 st) {
@@ -127,9 +131,7 @@ float waves(float scale, float distortion, int octaves, int banding) {
 
 vec2 distortCoords(in vec2 st, in float strength, in float map) {
     map -= 0.5;
-
     vec2 ou = st + map*strength;
-
     return ou;
 }
 
@@ -151,26 +153,43 @@ float fire() {
     return noise;
 }
 
+vec3 sparks() {
+    float distNoise = fbm(TexCoord*4, 2, vec2(0));
+    float noise = fbm(TexCoord*vec2(50, 20) + vec2(distNoise*20, -time * 12), 2, vec2(0));
+    noise = pow(noise, 5);
+    if (noise > 0.17) {
+        vec3 c1 = vec3(1.000000, 0.980136, 0.749383);
+        vec3 c2 = vec3(.800000, 0.146404, 0.014866);
+        vec3 col = mix(c1, c2, y);
+        return col * (1-pow(y, 2));
+    }
+    return vec3(0);
+}
+
 vec3 cartoonFire() {
-    float noise = pow(fire(), clamp(7-time*3, 0.8, 10));
+    float exponent = 3-(1-2*mouse.y)*2.7;
+    float noise = pow(fire(), exponent);
+    vec3 c;
 
     //gradient
     if(noise > 1) {
-        return vec3(1.000000, 0.980136, 0.749383);
+        c = vec3(1.000000, 0.980136, 0.749383);
     } else if(noise > 0.7) {
-        return vec3(1.000000, 0.980136, 0.2);
+        c =  vec3(1.000000, 0.980136, 0.2);
     } else if(noise > 0.56) {
-        return vec3(1.000000, 0.451227, 0.025711);
+        c =  vec3(1.000000, 0.451227, 0.025711);
     } else if(noise > 0.35) {
-        return vec3(1.000000, 0.286404, 0.024866);
+        c =  vec3(1.000000, 0.286404, 0.024866);
     } else if(noise > 0.24) {
-        return vec3(.800000, 0.146404, 0.014866);
+        c =  vec3(.800000, 0.146404, 0.014866);
     } else if(noise > 0.14) {
-        return vec3(0.216065, 0.030013, 0.007945);
+        c =  vec3(0.216065, 0.030013, 0.007945);
     } else if(noise > 0.05) {
-        return vec3(0.05);
+        c =  vec3(0.05);
     }
-    return vec3(0);
+    c += sparks();
+    
+    return c;
 }
 
 
@@ -215,7 +234,7 @@ void main() {
         case 9: //fbm
             c = vec3(fbm(TexCoord*12, int(time)+1, vec2(0)));
             break;
-        case 0: // distortion
+        case 0: // distortion,
             c = vec3(fbm(distortCoords(TexCoord*10, .7, time*fbm(TexCoord*12, 5, vec2(0))), 5, vec2(0)));            
             break;
         case 11: //waves, camera
@@ -225,12 +244,18 @@ void main() {
             c = vec3(fire());
             break;
         case 13: //cartoon fire
+            c = sparks();            
+            break;
+        case 14: //cartoon fire
             c = cartoonFire();            
             break;
-        case 14: //depth
+        case 15: //depth
             c = vec3(depth());
             break;
-        case 15: //depth
+        case 16: //mouse
+            c = vec3(mouse, 0);
+            break;
+        case 17: //sci
             c = sci();
             break;
         default:
