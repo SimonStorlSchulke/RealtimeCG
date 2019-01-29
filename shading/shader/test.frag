@@ -245,6 +245,31 @@ vec2 julia(vec2 seed, int iterations) {
 }
 
 //http://nuclear.mutantstargoat.com/articles/sdr_fract/
+vec3 julia1(vec2 seed, int iterations) {
+    
+    //Mapping
+    vec3 z;
+    z.x = 3.0 * (TexCoord.x - 0.5);
+    z.y = 2.0 * (TexCoord.y - 0.5);
+
+    //iterate
+    int i;
+    vec3 col = vec3(0);
+    for(i=0; i<iterations; i += 1) {
+        float x = (z.x * z.x - z.y * z.y) + seed.x;
+        float y = (z.y * z.x + z.x * z.y) + seed.y;
+
+        if((x * x + y * y) > 4.0) break;
+        vec3 z1 = vec3(x,y,i);
+        z.x = x;
+        z.y = y;
+        col = vec3((1.0/iterations) * i);
+    }
+   // col *= z * z* 1;
+    return col;
+}
+
+//http://nuclear.mutantstargoat.com/articles/sdr_fract/
 vec3 julia2(vec2 seed, int iterations) {
     
     //Mapping
@@ -326,13 +351,13 @@ void main() {
             c = vec3(depth());
             break;
         case 17: //mouse
-            c = vec3(julia(mouse*2-0.5, 12), 0);
+            c = vec3(julia(mouse*2-0.5, 100), 0);
             break;
         case 18: //julia fractal
             c = vec3(julia2((mouse*4-0.5)*mix(vec2(perlin(TexCoord*12+time*0.4, 7)), TexCoord, 0.9), 12));
             break;
         default:
-            c = vec3(1,0,0);
+            c = julia1(mouse*2-0.5, 100);
     }
     frag_colour = vec4(c,1);
 }
