@@ -100,7 +100,7 @@ float noise(in vec2 st) {
     float c = random(i + vec2(0.0, 1.0));
     float d = random(i + vec2(1.0, 1.0));
 
-    return d;
+    //return d;
     
     vec2 f = fract(st);
     //return f.x;
@@ -111,7 +111,7 @@ float noise(in vec2 st) {
     //quintic interpolation curve
     u = f*f*f*(f*(f*6.-15.)+10.);
 
-    //return u.x;
+    return u.x;
 
     // Mix 4 coorners percentages
     return mix(a, b, u.x) +

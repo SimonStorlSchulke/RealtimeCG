@@ -13,7 +13,7 @@ Das Umwandeln von Vektortypen untereinander ist meist Problemlos, so kann z.b. m
 ## 1. Texturkoordinaten
 Um die Generierung von Prozeduralen Texturen zu ermöglichen sind Daten nötig, die vom Hauptprogramm an den Shader und somit die Grafikkarte übergeben werden. Abgesehen von der reinen Geometrie, die im Vertex Shader verarbeitet wird, ist Min#destvoraussetzung für Texturen auf Geometrie die Übergabe von Texturkoordinaten. Dabei wird ein vec(2) Wert übergeben - eine Datenstruktur aus zwei float Werten (x und y). Dieser stellt pro Pixel die Texturkoordinaten auf der Geometrie dar. Auf einem Würfel mit X als Rot und Y als Grün angezeigt, sehen die Texturkoordinaten zum Beispiel so aus:
 
-![SCREEN 1 texcoords]()
+![SCREEN 1 texcoords](img/1.png)
 
 ## 2. Farbverläufe
 Die wohl einfachste Form der Textur sind einfache Farbverläufe, die entweder die X oder Y Komponente der Texturkoordinaten als Verlauf auf derm Objekt darstellen.
@@ -23,7 +23,7 @@ c = TexCoord.y;
 ```
 > `c` steht hier immer für die entgültig als `vec4` (RGBA) augegebene Farbe - auch wenn das Beispiel `float` oder `vec3` ergibt.
 
-![SCREEN 1 verlauf1]()
+![](img/2.png)
 
 <br>
 mithilfe des Modulo Operators, können auch sich wiederhohlende Farbverläufe dargestellt werden:
@@ -31,7 +31,8 @@ mithilfe des Modulo Operators, können auch sich wiederhohlende Farbverläufe da
 ```glsl
 c = skalierung * mod(TexCoord.y, 1/skalierung);
 ```
-Hirbei wird das Ergebniss zusätzlich noch mit der Skalierung multipliziert, um die Reichweite wieder auf 0 - 1 zu mappen.
+Hirbei wird das Ergebniss zusätzlich noch mit der Skalierung multipliziert, um die Reichweite wieder auf 0 - 1 (schwarz - weiß) darzustellen.  
+![](img/3.png)
 
 <br>
 
@@ -43,18 +44,21 @@ if (c > 0.5) {
 }
 c *= 2;
 ```
+![](img/4.png)
+
 <br>
 Weichere Verläufe sind mit Sinus oder Cosinus moglich:
 
 ```glsl
 c = (sin(TexCoord.x * skalierung * PI) + 1) / 2;
 ```
-Zusätzlich muss der Wert um 1 erhöht und halbiert werden, um die Reichweite wieder auf 0 - 1 zu mappen.
+Zusätzlich muss der Wert um 1 erhöht und halbiert werden, um die Reichweite wieder auf 0 - 1 zu mappen.  
+![](img/5.png)
 
 <br>
 
-Durch mischen dieser einfachen Funkionen in den verschiedenen Farbkanälen, lassen sich schon komplexere Muster erzeugen, wie zum Beispiel eine Schuppentextur.
-![Sc]()
+Durch Mischen dieser einfachen Funkionen in den verschiedenen Farbkanälen, lassen sich schon komplexere Muster erzeugen, wie zum Beispiel eine Schuppentextur.  
+![](img/6.png)
 
 <br>
 
@@ -77,7 +81,8 @@ Die Generierung von zufälligen Zahlen ist mit Computern nicht so einfach, wie e
 ```
 y = fract(sin(x)*1.0);
 ```
-BILD
+![](img/7.png)
+*The Book of Shaders: Random (thebookofshaders.com/10/)*
 
 klein genug skaliert und auf das Skalarprodukt eines Inputvektorsangewandt und eines zweiten fest definierten Vektors folgt daraus ein homogenes Rauschen, wenn es z.b. wie hier direkt auf die Texturkoordinaten angewandt wird.
 
@@ -89,22 +94,28 @@ float random (in vec2 st) {
             * 43758.5453123);
 }
 ```
-BILD
+![](img/8.png)
+
 
 ### 4.1 Noise
 Um mithilfe dieser `Random` Funktion nun ein gleichmäsigeres Rauschen zu erzeugen, wird zunächst ein vec2 `i` erzeugt, der die Texturkoordinaten auf die darunterliegente ganzzahligen Integer rundet. Für daraus erbibt sich dann ein Gitter, welches Zellen je nach Skalierung der Textur besitzt und für jede Zelle einen X und Y Wert von 0-Skalierung definiert.
 
 *Beispiel für Skalierung = 3*
+
 ![](img/table.png)
 
 Diese Werte werden dann verwendet, um einen zufälligen Wert pro Zelle zu generieren.
 
-![](img/9.png)
+![](img/9a.png)
+
 
 Das wird nun noch drei mal wiederholt, wobei die Koordinaten jeweils um 1 nach rechts, nach unten und nach rechts unten versetzt werden. Daraus ergeben sich die Bilder a,b,c und d.
-BILD abcd
-Über den Restwert von i (`fract`), der mithilfe einer sogenannten quintic interpolation curve TODO, werden diese vier Texturen dann prozentual gemischt, um einen weichen Übergang zu erzeugen.
-BILD
+![](img/abcdImg.png)
+Schließlich wird der Restwert von i (`fract`) ermittelt und mithilfe einer sogenannten quintic interpolation curve weicher dargestellt.  
+![](img/10.png)  
+Mit diesem Wert werden die vier Texturen dann prozentual gemischt, um einen Übergang zwischen den vier Texturen zu erzeugen.  
+![](img/11.png)
+
 
 ```glsl
 // Aus Book Of Shaders -
@@ -134,7 +145,8 @@ float noise(in vec2 st) {
 Mehrere Ergebnisse der oben beschriebenen Funktion, können nun übereinandergelegt werden um ein detailierteres Ergebnis zu erzielen. Dabei wird mit jeder weiteren sogen. Oktave die Skalierung erhöht (Textur verkleinert) und mit einem immer niedriger werdenden Wert (amplitude) zum bisherigen Ergebnis hinzugefügt.
 Dieser iterative Prozess wird Fractal Brownian Motion - fbm Noise genannt.
 
-BILD 
+![](img/12.png)
+ 
 
 ```glsl
 float fbm(in vec2 st, int OCTAVES) {
@@ -154,9 +166,12 @@ float fbm(in vec2 st, int OCTAVES) {
 ```
 
 ## 5. Distortion
-Mit den bisher gezeigten Möglichkeiten lassen sich nun bereits komplexe muster erzeugen. Eine oft genutzte Methode ist die Verzerrung der Texturkoordinaten selbst durch Texturen. Eine der einfachste Methoden ist der mix der Koordinaten und der entsprechenden Textur mit der `mix()` Funktion. Beispielsweise lässt sich durch die Anwendung von Noise verzerrter Texturkoordinaten auf Gradienten eine marmorähnliche Textur erzeugen:
+Mit den bisher gezeigten Möglichkeiten lassen sich nun bereits komplexe muster erzeugen. Eine oft genutzte Methode ist die Verzerrung (Distortion) der Texturkoordinaten selbst durch Texturen. Eine der einfachste Methoden ist der mix der Koordinaten und der entsprechenden Textur mit der `mix()` Funktion. Beispielsweise lässt sich durch die Anwendung von Noise verzerrter Texturkoordinaten auf Gradienten eine marmorähnliche Textur erzeugen:
 ```glsl
 float noise = perlin(TexCoord*scale, octaves);
 c = Gradients(mix(TexCoord.x, noise, distortionAmmount), scale);
 ```
-![](img/13.png)
+![](img/13a.png)
+
+Auch komplexere Muster sind möglich, wie zum etwa eine animierte Flammentextur
+![](img/14.png)
