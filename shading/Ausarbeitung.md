@@ -50,3 +50,21 @@ Weichere Verläufe sind mit Sinus oder Cosinus moglich:
 c = (sin(TexCoord.y * skalierung * PI) + 1) / 2;
 ```
 Zusätzlich muss der Wert um 1 erhöht und halbiert werden, um die Reichweite wieder auf 0 - 1 zu mappen.
+
+<br>
+
+Durch mischen dieser einfachen Funkionen in den verschiedenen Farbkanälen, lassen sich schon komplexere Muster erzeugen, wie zum Beispiel eine Schuppentextur.
+![Sc]()
+
+<br>
+
+## 3. Animierte Texturen:
+Über sogenannte Uniforms, können zusätzliche Werte aus dem Hauptprogramm an den Shader gegeben werden. Um animierte Texturen zu ermöglichen, kann zum Beispiel die Zeit übergeben werden.
+Hier wird die Zeit zur Y-Koordinate hinzugefügt, um einen bewegten Farbverlauf zu erzeugen:
+
+```glsl
+c = (sin(TexCoord.y + time * skalierung * PI) + 1) / 2;
+```
+<br>
+
+Interessante Effekte können auch mit der Übergabe der mittles GLFW ausgelesenen Mausposition erzielt werden.
