@@ -72,7 +72,7 @@ Interessante Effekte können auch mit der Übergabe der mittles GLFW ausgelesene
 ## 4. FBM und Perlin
 Eine der wichtigsten prozeduralen Texturen für die Darstellung ist das sogenannte Perlin Noise Benannt wurde diese Technik nach dem Erfinder Ken Perlin, der für diese für den Film "Tron" entwickelte und einen Oscar gewann.
 
-# 4.1 Random
+### 4.1 Random
 Die Generierung von zufälligen Zahlen ist mit Computern nicht so einfach, wie es erscheinen mag. Meist werden dabei Algorithmen verwendet, die für einen bestimmten Startwert (Seed) eine pseudozufällige Zahl zurückgeben. Die im *Book od Shaders* definierte Funktion ist 
 ```
 y = fract(sin(x)*1.0);
@@ -91,17 +91,20 @@ float random (in vec2 st) {
 ```
 BILD
 
-# 4.1 Noise
+### 4.1 Noise
 Um mithilfe dieser `Random` Funktion nun ein gleichmäsigeres Rauschen zu erzeugen, wird zunächst ein vec2 `i` erzeugt, der die Texturkoordinaten auf die darunterliegente ganzzahligen Integer rundet. Für daraus erbibt sich dann ein Gitter, welches Zellen je nach Skalierung der Textur besitzt und für jede Zelle einen X und Y Wert von 0-Skalierung definiert.
 
-*Beispiel für Skalierung = 3
-BILD TABLE
+*Beispiel für Skalierung = 3*
+![](img/table.png)
 
 Diese Werte werden dann verwendet, um einen zufälligen Wert pro Zelle zu generieren.
-BILD 9
+
+![](img/9.png)
+
 Das wird nun noch drei mal wiederholt, wobei die Koordinaten jeweils um 1 nach rechts, nach unten und nach rechts unten versetzt werden. Daraus ergeben sich die Bilder a,b,c und d.
 BILD abcd
-Über den Restwert von i (`fract`), der mithilfe einer sogenannten quintic interpolation curve
+Über den Restwert von i (`fract`), der mithilfe einer sogenannten quintic interpolation curve TODO, werden diese vier Texturen dann prozentual gemischt, um einen weichen Übergang zu erzeugen.
+BILD
 
 ```glsl
 // Aus Book Of Shaders -
@@ -127,3 +130,33 @@ float noise(in vec2 st) {
             (d - b) * u.x * u.y;
 }
 ```
+### 4.2 Iterationen
+Mehrere Ergebnisse der oben beschriebenen Funktion, können nun übereinandergelegt werden um ein detailierteres Ergebnis zu erzielen. Dabei wird mit jeder weiteren sogen. Oktave die Skalierung erhöht (Textur verkleinert) und mit einem immer niedriger werdenden Wert (amplitude) zum bisherigen Ergebnis hinzugefügt.
+Dieser iterative Prozess wird Fractal Brownian Motion - fbm Noise genannt.
+
+BILD 
+
+```glsl
+float fbm(in vec2 st, int OCTAVES) {
+
+    float value = 0.0;
+    float amplitude = .5;
+
+    // Loop octaves
+    for (int i = 0; i < OCTAVES; i++) {
+        value += amplitude * noise(st);
+
+        st *= 2.;           //Skalierung erhöhen
+        amplitude *= .5;    //Amplitude verringern
+    }
+    return value;
+}
+```
+
+## 5. Distortion
+Mit den bisher gezeigten Möglichkeiten lassen sich nun bereits komplexe muster erzeugen. Eine oft genutzte Methode ist die Verzerrung der Texturkoordinaten selbst durch Texturen. Eine der einfachste Methoden ist der mix der Koordinaten und der entsprechenden Textur mit der `mix()` Funktion. Beispielsweise lässt sich durch die Anwendung von Noise verzerrter Texturkoordinaten auf Gradienten eine marmorähnliche Textur erzeugen:
+```glsl
+float noise = perlin(TexCoord*scale, octaves);
+c = Gradients(mix(TexCoord.x, noise, distortionAmmount), scale);
+```
+![](img/13.png)
