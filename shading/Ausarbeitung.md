@@ -110,7 +110,7 @@ Diese Werte werden dann verwendet, um einen zufälligen Wert pro Zelle zu generi
 
 
 Das wird nun noch drei mal wiederholt, wobei die Koordinaten jeweils um 1 nach rechts, nach unten und nach rechts unten versetzt werden. Daraus ergeben sich die Bilder a,b,c und d.
-![](img/abcdImg.png)
+![](img/abcdImg.png)  
 Schließlich wird der Restwert von i (`fract`) ermittelt und mithilfe einer sogenannten quintic interpolation curve weicher dargestellt.  
 ![](img/10.png)  
 Mit diesem Wert werden die vier Texturen dann prozentual gemischt, um einen Übergang zwischen den vier Texturen zu erzeugen.  
@@ -145,7 +145,7 @@ float noise(in vec2 st) {
 Mehrere Ergebnisse der oben beschriebenen Funktion, können nun übereinandergelegt werden um ein detailierteres Ergebnis zu erzielen. Dabei wird mit jeder weiteren sogen. Oktave die Skalierung erhöht (Textur verkleinert) und mit einem immer niedriger werdenden Wert (amplitude) zum bisherigen Ergebnis hinzugefügt.
 Dieser iterative Prozess wird Fractal Brownian Motion - fbm Noise genannt.
 
-![](img/12.png)
+![](img/12.png)  
  
 
 ```glsl
@@ -171,7 +171,7 @@ Mit den bisher gezeigten Möglichkeiten lassen sich nun bereits komplexe muster 
 float noise = perlin(TexCoord*scale, octaves);
 c = Gradients(mix(TexCoord.x, noise, distortionAmmount), scale);
 ```
-![](img/13a.png)
+![](img/13a.png)  
 
 Auch komplexere Muster sind möglich, wie zum etwa eine animierte Flammentextur
-![](img/14.png)
+![](img/14.png)  
