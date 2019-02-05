@@ -45,6 +45,7 @@ float LinearGradients(float val, float scale) {
     if (f > 0.5) {
         f = 1-f;
     }
+    f *= 2;
     return f;
 }
 
@@ -90,8 +91,8 @@ float random (in vec2 st) {
 float noise(in vec2 st) {
     vec2 i = floor(st);
 
-    return i.x / 12;
-    return i.y / 12;
+    //return i.x / 12;
+    //return i.y / 12;
 
     // Four corners in 2D of a tile
     float a = random(i);
@@ -99,10 +100,10 @@ float noise(in vec2 st) {
     float c = random(i + vec2(0.0, 1.0));
     float d = random(i + vec2(1.0, 1.0));
 
-    return a;
+    return d;
     
     vec2 f = fract(st);
-    return f.x;
+    //return f.x;
 
     // Cubic Hermine Curve
     vec2 u = f*f*(3.0-2.0*f);
@@ -110,7 +111,7 @@ float noise(in vec2 st) {
     //quintic interpolation curve
     u = f*f*f*(f*(f*6.-15.)+10.);
 
-    return u.x;
+    //return u.x;
 
     // Mix 4 coorners percentages
     return mix(a, b, u.x) +
@@ -311,7 +312,7 @@ void main() {
             c = vec3(HardGradients(y, 4));            
             break;
         case 4: //Sin Gradients
-            c = vec3(SinGradients(x, 3));
+            c = vec3(LinearGradients(x, 3));
             break;
         case 5: //scales
             c = scales();
@@ -323,37 +324,41 @@ void main() {
             c = vec3(fract(TexCoord*2), 0);
             break;
         case 8: //noise
+            c = vec3(random(TexCoord));
+            //c = vec3(simplexNoise(TexCoord*8)*0.5 + 0.5);
+            break;
+        case 9: //noise
             c = vec3(noise(TexCoord*12));
             //c = vec3(simplexNoise(TexCoord*8)*0.5 + 0.5);
             break;
-        case 9: //fbm
+        case 0: //fbm
             c = vec3(fbm(TexCoord*8 + 12, int(time)+1));
             break;
-        case 0: // distortion,
+        case 11: // distortion,
             c = vec3(perlin(distortCoords(TexCoord*8 + 12, .7, time*perlin(TexCoord*12 + 12, 5)), 5));            
             break;
-        case 11: //waves, camera
+        case 12: //waves, camera
             c = vec3(waves(5, camera[0].y * 2, 5, 5));
             break;
-        case 12: //fire
+        case 13: //fire
             c = vec3(fire(TexCoord));
             break;
-        case 13: //cartoon fire
+        case 14: //cartoon fire
             c = sparks();            
             break;
-        case 14: //cartoon fire
+        case 15: //cartoon fire
             c = cartoonFire(TexCoord);            
             break;
-        case 15: //depth
+        case 16: //depth
             c = vec3(depth());
             break;
-        case 16: //sci
+        case 17: //sci
             c = vec3(depth());
             break;
-        case 17: //mouse
+        case 18: //mouse
             c = vec3(julia(mouse*2-0.5, 100), 0);
             break;
-        case 18: //julia fractal
+        case 19: //julia fractal
             c = vec3(julia2((mouse*4-0.5)*mix(vec2(perlin(TexCoord*12+time*0.4, 7)), TexCoord, 0.9), 12));
             break;
         default:
