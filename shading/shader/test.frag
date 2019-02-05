@@ -249,8 +249,8 @@ vec3 julia1(vec2 seed, int iterations) {
     
     //Mapping
     vec3 z;
-    z.x = 3.0 * (TexCoord.x - 0.5);
-    z.y = 2.0 * (TexCoord.y - 0.5);
+    z.x = 3.0 * (TexCoord.x / (time*time) - 0);
+    z.y = 2.0 * (TexCoord.y / (time*time) - 0.5);
 
     //iterate
     int i;
@@ -357,6 +357,7 @@ void main() {
             c = vec3(julia2((mouse*4-0.5)*mix(vec2(perlin(TexCoord*12+time*0.4, 7)), TexCoord, 0.9), 12));
             break;
         default:
+            //c = julia1(mouse*2-0.5, 100);
             c = julia1(mouse*2-0.5, 100);
     }
     frag_colour = vec4(c,1);
